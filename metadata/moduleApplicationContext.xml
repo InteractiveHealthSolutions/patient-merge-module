@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-2.5.xsd
+           http://www.springframework.org/schema/util
+           http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+           
+    <context:component-scan base-package="org.openmrs.module.mergePatient" />
+    	
+    <bean id="mergePatientUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    	<property name="order"><value>4</value></property>
+    	<property name="mappings">
+            <props>
+	           <prop key="module/mergePatient/search.form">SearchPatientController</prop>
+	           <prop key="module/mergePatient/list.form">PatientListController</prop>
+	           <prop key="module/mergePatient/action.form">ActionController</prop>
+	           <prop key="module/mergePatient/success.form">SuccessController</prop>
+	        </props>
+		</property>
+    </bean>
+    
+	  
+	<!-- Controllers -->
+      
+	
+     <bean id="SearchPatientController" class="@MODULE_PACKAGE@.web.controller.SearchPatientController">
+     	<property name="formView"><value>/module/mergePatient/searchPatientPage</value></property>
+		<property name="successView"><value>list</value></property>
+		<property name="validator"><ref bean="mergePatientValidator" /></property>
+     
+     </bean>
+   
+   <bean id="PatientListController" class="@MODULE_PACKAGE@.web.controller.PatientListController">
+		<property name="formView"><value>/module/mergePatient/patientListPage</value></property>
+		<property name="successView"><value>action</value></property>
+		<property name="validator"><ref bean="mergePatientValidator" /></property>
+   </bean>
+   
+   <bean id="ActionController" class="@MODULE_PACKAGE@.web.controller.ActionController">
+		<property name="formView"><value>/module/mergePatient/actionPage</value></property>
+		<property name="successView"><value>success</value></property>
+		<property name="validator"><ref bean="mergePatientValidator" /></property>
+   </bean>
+  
+   <bean id="SuccessController" class="@MODULE_PACKAGE@.web.controller.SuccessController">
+		<property name="formView"><value>/module/mergePatient/successPage</value></property>
+		<property name="successView"><value>success</value></property>
+		<property name="validator"><ref bean="mergePatientValidator" /></property>
+   </bean> 
+   <bean id="mergePatientValidator" class="org.openmrs.module.mergePatient.validator.MergePatientValidator" />
+   
+	
+     <!-- /Controllers -->
+ </beans>
