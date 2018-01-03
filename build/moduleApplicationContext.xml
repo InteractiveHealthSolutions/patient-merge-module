@@ -24,27 +24,31 @@
 	        </props>
 		</property>
     </bean>
+    
+	  
+	<!-- Controllers -->
+      
 	
-     <bean id="SearchPatientController" class="@MODULE_PACKAGE@.web.controller.SearchPatientController">
+     <bean id="SearchPatientController" class="org.openmrs.module.mergePatient.web.controller.SearchPatientController">
      	<property name="formView"><value>/module/mergePatient/searchPatientPage</value></property>
 		<property name="successView"><value>list</value></property>
 		<property name="validator"><ref bean="mergePatientValidator" /></property>
      
      </bean>
    
-   <bean id="PatientListController" class="@MODULE_PACKAGE@.web.controller.PatientListController">
+   <bean id="PatientListController" class="org.openmrs.module.mergePatient.web.controller.PatientListController">
 		<property name="formView"><value>/module/mergePatient/patientListPage</value></property>
 		<property name="successView"><value>action</value></property>
 		<property name="validator"><ref bean="mergePatientValidator" /></property>
    </bean>
    
-   <bean id="ActionController" class="@MODULE_PACKAGE@.web.controller.ActionController">
+   <bean id="ActionController" class="org.openmrs.module.mergePatient.web.controller.ActionController">
 		<property name="formView"><value>/module/mergePatient/actionPage</value></property>
 		<property name="successView"><value>success</value></property>
 		<property name="validator"><ref bean="mergePatientValidator" /></property>
    </bean>
   
-   <bean id="SuccessController" class="@MODULE_PACKAGE@.web.controller.SuccessController">
+   <bean id="SuccessController" class="org.openmrs.module.mergePatient.web.controller.SuccessController">
 		<property name="formView"><value>/module/mergePatient/successPage</value></property>
 		<property name="successView"><value>success</value></property>
 		<property name="validator"><ref bean="mergePatientValidator" /></property>

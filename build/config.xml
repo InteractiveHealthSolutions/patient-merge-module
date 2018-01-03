@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//OpenMRS//DTD OpenMRS Config 1.2//EN" "../lib-common/config-1.2.dtd">
+
+<module configVersion="1.2">
+	
+	<!-- Base Module Properties -->
+	<id>mergePatient</id>
+	<name>Merge Patient</name>
+	<version>1.0</version>
+	<package>org.openmrs.module.mergePatient</package>
+	<author>Shakeeb Raza</author>
+	<description>
+			The Purpose of this Module is to merge duplicate patient and to reduce the duplication of created patients  
+	</description>
+
+	<activator>org.openmrs.module.mergePatient.MergePatientActivator</activator>
+	
+	<require_version>1.6.0</require_version>
+	
+	<messages>
+		<lang>en</lang>
+		<file>messages.properties</file>
+	</messages>
+	<messages>
+		<lang>ru</lang>
+		<file>messages_ru.properties</file>
+	</messages>
+	
+	
+</module>
+
