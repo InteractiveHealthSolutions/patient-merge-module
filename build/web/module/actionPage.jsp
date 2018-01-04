@@ -56,6 +56,12 @@ $(document).ready(function(){
 			   $('#swap').click(function(){
 				 	window.location.replace("/openmrs/module/mergePatient/action.form?patientA="+${patientBId}+"&patientB="+${patientAId});
 			   });
+			   $( "#duplication" ).submit(function( event ) {
+				   if(confirm('<spring:message code="mergePatient.mergePatient.confirmSubmit" />')==true)
+					   return true;
+					else
+						return false;
+				 });
 });	
 </script>
 
@@ -63,7 +69,7 @@ $(document).ready(function(){
 
 #primaryDiv, #duplicateDiv {
    float: left;
-   width: 40%; 
+   width: 45%; 
 }
  #duplicateDiv {
    margin-left: 5%;
@@ -77,6 +83,18 @@ $(document).ready(function(){
  duplicateDiv>table,  primaryDiv>table th,  primaryDiv>table td {
  border: 1px solid black;
  border-collapse: collapse;
+}
+
+#footer{
+ display: -webkit-box !important;
+}
+
+.footer{
+ display: -webkit-box !important;
+}
+
+footer{
+ display: -webkit-box !important;
 }
 </style>
 
@@ -94,6 +112,7 @@ $(document).ready(function(){
 				<th>Id</th>
 				<th><spring:message code="mergePatient.mergePatient.dataType" /></th>
 				<th><spring:message code="mergePatient.mergePatient.data" /></th>
+				<th><spring:message code="mergePatient.mergePatient.dateCreated" /></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -102,6 +121,7 @@ $(document).ready(function(){
 					<td><c:out value="${identifier.id}" /></td>
 					<td>Identifier</td>
 					<td><c:out value="${identifier.name}" /></td>
+					<td><c:out value="${identifier.date}" /></td>
 				</tr>
 			</c:forEach>
 			<c:forEach var="encounter" items="${patientAEncounter}" varStatus="loop">
@@ -109,6 +129,7 @@ $(document).ready(function(){
 					<td><c:out value="${encounter.id}" /></td>
 					<td>Encounter</td>
 					<td><a href='/openmrs/admin/encounters/encounter.form?encounterId=<c:out value="${encounter.id}"/>'><c:out value="${encounter.name}" /></a></td>
+					<td><c:out value="${encounter.date}" /></td>
 				</tr>
 			</c:forEach>
 			<c:forEach var="program" items="${patientAProgram}" varStatus="loop">
@@ -116,6 +137,7 @@ $(document).ready(function(){
 					<td><c:out value="${program.id}" /></td>
 					<td>Program</td>			
 					<td><c:out value="${program.name}" /></td>
+					<td><c:out value="${program.date}" /></td>
 				</tr>
 			</c:forEach>
 		</tbody>
@@ -131,6 +153,7 @@ $(document).ready(function(){
 						<th>Id</th>
 						<th><spring:message code="mergePatient.mergePatient.dataType" /></th>
 						<th><spring:message code="mergePatient.mergePatient.data" /></th>
+						<th><spring:message code="mergePatient.mergePatient.dateCreated" /></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -143,6 +166,7 @@ $(document).ready(function(){
 							<td><c:out value="${identifier.id}" /></td>
 							<td>Identifier</td>
 							<td><c:out value="${identifier.name}" /></td>
+							<td><c:out value="${identifier.date}" /></td>
 						</tr>
 					</c:forEach>
 					<c:forEach var="encounter" items="${patientBEncounter}"
@@ -156,6 +180,7 @@ $(document).ready(function(){
 							<td>Encounter</td>
 							<td><a href='/openmrs/admin/encounters/encounter.form?encounterId=<c:out value="${encounter.id}"/>'>
 								<c:out value="${encounter.name}" /></a></td>
+								<td><c:out value="${encounter.date}" /></td>
 						</tr>
 					</c:forEach>
 					<c:forEach var="program" items="${patientBProgram}"
@@ -168,6 +193,7 @@ $(document).ready(function(){
 							<td><c:out value="${program.id}" /></td>
 							<td>Program</td>
 							<td><c:out value="${program.name}" /></td>
+							<td><c:out value="${program.date}" /></td>
 						</tr>
 					</c:forEach>
 				</tbody>

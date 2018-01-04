@@ -109,6 +109,7 @@ public class ActionController extends SimpleFormController {
 			dataMap = new HashMap<String, Object>();
 			dataMap.put("id", patientAEncounter.getEncounterId());
 			dataMap.put("name", patientAEncounter.getEncounterType().getName());
+			dataMap.put("date", patientAEncounter.getDateCreated());
 			dataList.add(dataMap);
 		}
 		model.put("patientAEncounter", dataList);
@@ -118,6 +119,7 @@ public class ActionController extends SimpleFormController {
 			dataMap = new HashMap<String, Object>();
 			dataMap.put("id", patientAIdentifier.getIdentifier());
 			dataMap.put("name", patientAIdentifier.getIdentifierType().getName());
+			dataMap.put("date", patientAIdentifier.getDateCreated());
 			dataList.add(dataMap);
 		}
 		model.put("patientAIdentifier", dataList);
@@ -127,6 +129,7 @@ public class ActionController extends SimpleFormController {
 			dataMap = new HashMap<String, Object>();
 			dataMap.put("id", patientAProgram.getPatientProgramId());
 			dataMap.put("name", patientAProgram.getProgram().getName());
+			dataMap.put("date", patientAProgram.getDateCreated());
 			dataList.add(dataMap);
 		}
 		model.put("patientAProgram", dataList);
@@ -140,6 +143,7 @@ public class ActionController extends SimpleFormController {
 			dataMap = new HashMap<String, Object>();
 			dataMap.put("id", patientBEncounter.getEncounterId());
 			dataMap.put("name", patientBEncounter.getEncounterType().getName());
+			dataMap.put("date", patientBEncounter.getDateCreated());
 			dataList.add(dataMap);
 		}
 		model.put("patientBEncounter", dataList);
@@ -149,6 +153,7 @@ public class ActionController extends SimpleFormController {
 			dataMap = new HashMap<String, Object>();
 			dataMap.put("id", patientBIdentifier.getIdentifier());
 			dataMap.put("name", patientBIdentifier.getIdentifierType().getName());
+			dataMap.put("date", patientBIdentifier.getDateCreated());
 			dataList.add(dataMap);
 		}
 		model.put("patientBIdentifier", dataList);
@@ -158,6 +163,7 @@ public class ActionController extends SimpleFormController {
 			dataMap = new HashMap<String, Object>();
 			dataMap.put("id", patientBProgram.getPatientProgramId());
 			dataMap.put("name", patientBProgram.getProgram().getName());
+			dataMap.put("date", patientBProgram.getDateCreated());
 			dataList.add(dataMap);
 		}
 		model.put("patientBProgram", dataList);
