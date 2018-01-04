@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>mergePatient</id>
 	<name>Merge Patient</name>
-	<version>1.0</version>
+	<version>1.1</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Shakeeb Raza</author>
 	<description>
@@ -16,6 +16,15 @@
 	<activator>@MODULE_PACKAGE@.MergePatientActivator</activator>
 	
 	<require_version>1.6.0</require_version>
+	
+	<extension>
+		<point>org.openmrs.admin.list</point>
+		<class>org.openmrs.module.mergePatient.extension.html.AdminList</class>
+	</extension>
+	<extension>
+		<point>org.openmrs.gutter.tools</point>
+		<class>org.openmrs.module.mergePatient.extension.html.mergePatientGutterItem</class>
+	</extension>
 	
 	<messages>
 		<lang>en</lang>

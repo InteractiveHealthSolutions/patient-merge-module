@@ -53,27 +53,9 @@ $(document).ready(function(){
 			         }
 			      }
 			   });
-			   
-			   $('#duplication').on('submit', function(e){
-				      var form = this;
-
-				      // Iterate over all checkboxes in the table
-				      table.$('input[type="checkbox"]').each(function(){
-				         // If checkbox doesn't exist in DOM
-				         if(!$.contains(document, this)){
-				            // If checkbox is checked
-				            if(this.checked){
-				               // Create a hidden element 
-				               $(form).append(
-				                  $('<input>')
-				                     .attr('type', 'hidden')
-				                     .attr('name', this.name)
-				                     .val(this.value)
-				               );
-				            }
-				         } 
-				      });
-});
+			   $('#swap').click(function(){
+				 	window.location.replace("/openmrs/module/mergePatient/action.form?patientA="+${patientBId}+"&patientB="+${patientAId});
+			   });
 });	
 </script>
 
@@ -101,76 +83,96 @@ $(document).ready(function(){
 </head>
 <body>
 <form action="" method="post" name="duplication" id="duplication">
-<div id="btnDiv" name="btnDiv"><input type="submit" value='<spring:message code="@MODULE_ID@.mergePatient.mergeBtn" />'></div>
+<div id="btnDiv" name="btnDiv" style="float: right; margin-left: 5px;"><input type="submit" value='<spring:message code="@MODULE_ID@.mergePatient.mergeBtn" />'></div>
+<div id="swapDiv" name="swapDiv" style="float: right;  margin-left: 5px;"><input type="button" value='<spring:message code="@MODULE_ID@.mergePatient.swapBtn" />' id="swap"></div>
 <div id="primaryDiv">
-<h3><c:out value="${patientAName}" /></h3>
-<Table id="primaryTable" name="primary">
-<thead>
-<tr>
-<th>Id</th>
-<th><spring:message code="@MODULE_ID@.mergePatient.dataType" /></th>
-<th><spring:message code="@MODULE_ID@.mergePatient.data" /></th>
-</tr>
-</thead>
-<tbody>
-<c:forEach var="identifier" items="${patientAIdentifier}" varStatus="loop">
+	<h2><spring:message code="@MODULE_ID@.mergePatient.primaryPatient" /></h2>
+	<h3><c:out value="${patientAName}" />(<c:out value="${patientAIdentifier[0].id}" />)</h3>
+	<Table id="primaryTable" name="primary">
+		<thead>
 			<tr>
-				<td><c:out value="${identifier.id}" /></td>
-				<td>Identifier</td>
-				<td><c:out value="${identifier.name}" /></td>
+				<th>Id</th>
+				<th><spring:message code="@MODULE_ID@.mergePatient.dataType" /></th>
+				<th><spring:message code="@MODULE_ID@.mergePatient.data" /></th>
 			</tr>
-</c:forEach>
-<c:forEach var="encounter" items="${patientAEncounter}" varStatus="loop">
-			<tr>
-				<td><c:out value="${encounter.id}" /></td>
-				<td>Encounter</td>
-				<td><c:out value="${encounter.name}" /></td>
-			</tr>
-</c:forEach>
-<c:forEach var="program" items="${patientAProgram}" varStatus="loop">
-			<tr>
-				<td><c:out value="${program.id}" /></td>
-				<td>Program</td>			
-				<td><c:out value="${program.name}" /></td>
-			</tr>
-</c:forEach>
-</tbody>
-</Table>
+		</thead>
+		<tbody>
+			<c:forEach var="identifier" items="${patientAIdentifier}" varStatus="loop">
+				<tr>
+					<td><c:out value="${identifier.id}" /></td>
+					<td>Identifier</td>
+					<td><c:out value="${identifier.name}" /></td>
+				</tr>
+			</c:forEach>
+			<c:forEach var="encounter" items="${patientAEncounter}" varStatus="loop">
+				<tr>
+					<td><c:out value="${encounter.id}" /></td>
+					<td>Encounter</td>
+					<td><a href='/openmrs/admin/encounters/encounter.form?encounterId=<c:out value="${encounter.id}"/>'><c:out value="${encounter.name}" /></a></td>
+				</tr>
+			</c:forEach>
+			<c:forEach var="program" items="${patientAProgram}" varStatus="loop">
+				<tr>
+					<td><c:out value="${program.id}" /></td>
+					<td>Program</td>			
+					<td><c:out value="${program.name}" /></td>
+				</tr>
+			</c:forEach>
+		</tbody>
+	</Table>
 </div>
 <div id="duplicateDiv">
-<h3><c:out value="${patientBName}" /></h3>
-<Table id="duplicateTable" name="duplicate">
-<thead>
-<tr>
-<th><input type="checkbox" id="selectAll" name="selectAll"></th>
-<th><spring:message code="@MODULE_ID@.mergePatient.dataType" /></th>
-<th><spring:message code="@MODULE_ID@.mergePatient.data" /></th>
-</tr>
-</thead>
-<tbody><c:forEach var="identifier" items="${patientBIdentifier}" varStatus="loop">
-			<tr>
-				<td><input type="checkbox"  name='id_<c:out value="${identifier.id}"  />' id='<c:out value="${identifier.id}"  />'></td>
-				<td>Identifier</td>
-				<td><c:out value="${identifier.name}" /></td>
-			</tr>
-</c:forEach>
-<c:forEach var="encounter" items="${patientBEncounter}" varStatus="loop">
-			<tr>
-				<td><input type="checkbox" name='en_<c:out value="${encounter.id}"  />' value='<c:out value="${encounter.id}"  />' id='<c:out value="${encounter.id}"  />'></td>
-				<td>Encounter</td>
-				<td><a href='/openmrs/admin/encounters/encounter.form?encounterId=<c:out value="${encounter.id}"/>'><c:out value="${encounter.name}" /></a></td>
-			</tr>
-</c:forEach>
-<c:forEach var="program" items="${patientBProgram}" varStatus="loop">
-			<tr>
-				<td><input type="checkbox" name='pg_<c:out value="${program.id}"  />' value='<c:out value="${program.id}"  />' id='<c:out value="${program.id}"  />'></td>
-				<td>Program</td>			
-				<td><c:out value="${program.name}" /></td>
-			</tr>
-</c:forEach>
-</tbody>
-</Table>
-</div>
+			<h2><spring:message code="@MODULE_ID@.mergePatient.duplicatePatient" /></h2>
+			<h3><c:out value="${patientBName}" />(<c:out value="${patientBIdentifier[0].id}" />)</h3>
+			<Table id="duplicateTable" name="duplicate">
+				<thead>
+					<tr>
+						<th><input type="checkbox" id="selectAll" name="selectAll"></th>
+						<th>Id</th>
+						<th><spring:message code="@MODULE_ID@.mergePatient.dataType" /></th>
+						<th><spring:message code="@MODULE_ID@.mergePatient.data" /></th>
+					</tr>
+				</thead>
+				<tbody>
+					<c:forEach var="identifier" items="${patientBIdentifier}"
+						varStatus="loop">
+						<tr>
+							<td><input type="checkbox"
+								name='id_<c:out value="${identifier.id}"  />'
+								id='<c:out value="${identifier.id}"  />'></td>
+							<td><c:out value="${identifier.id}" /></td>
+							<td>Identifier</td>
+							<td><c:out value="${identifier.name}" /></td>
+						</tr>
+					</c:forEach>
+					<c:forEach var="encounter" items="${patientBEncounter}"
+						varStatus="loop">
+						<tr>
+							<td><input type="checkbox"
+								name='en_<c:out value="${encounter.id}"  />'
+								value='<c:out value="${encounter.id}"  />'
+								id='<c:out value="${encounter.id}"  />'></td>
+							<td><c:out value="${encounter.id}" /></td>
+							<td>Encounter</td>
+							<td><a href='/openmrs/admin/encounters/encounter.form?encounterId=<c:out value="${encounter.id}"/>'>
+								<c:out value="${encounter.name}" /></a></td>
+						</tr>
+					</c:forEach>
+					<c:forEach var="program" items="${patientBProgram}"
+						varStatus="loop">
+						<tr>
+							<td><input type="checkbox"
+								name='pg_<c:out value="${program.id}"  />'
+								value='<c:out value="${program.id}"  />'
+								id='<c:out value="${program.id}"  />'></td>
+							<td><c:out value="${program.id}" /></td>
+							<td>Program</td>
+							<td><c:out value="${program.name}" /></td>
+						</tr>
+					</c:forEach>
+				</tbody>
+			</Table>
+		</div>
 </form>
 </body>
 </html>

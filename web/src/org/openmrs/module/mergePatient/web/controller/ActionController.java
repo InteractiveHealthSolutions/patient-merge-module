@@ -101,6 +101,7 @@ public class ActionController extends SimpleFormController {
 		    new Date());
 		//Patient A
 		model.put("patientAName", patientA.getPersonName());
+		model.put("patientAId", patientA.getPatientId());
 		
 		Map<String, Object> dataMap;
 		List<Object> dataList = new ArrayList<Object>();
@@ -132,6 +133,7 @@ public class ActionController extends SimpleFormController {
 		
 		//Patient B
 		model.put("patientBName", patientB.getPersonName());
+		model.put("patientBId", patientB.getPatientId());
 		
 		dataList = new ArrayList<Object>();
 		for (Encounter patientBEncounter : patientBEncounters) {

@@ -24,10 +24,6 @@
 	        </props>
 		</property>
     </bean>
-    
-	  
-	<!-- Controllers -->
-      
 	
      <bean id="SearchPatientController" class="org.openmrs.module.mergePatient.web.controller.SearchPatientController">
      	<property name="formView"><value>/module/mergePatient/searchPatientPage</value></property>

@@ -110,7 +110,7 @@ public class PatientListController extends SimpleFormController {
 		String dateOfBirth=request.getParameter("DOB");
 		String gender=request.getParameter("gender");
 		String p=URLDecoder.decode(patientName,"UTF-8");
-		List<Patient> patients=Context.getPatientService().getPatients(URLDecoder.decode(patientName,"UTF-8"));
+		List<Patient> patients=Context.getPatientService().getPatients(p);
 		Format formatter = new SimpleDateFormat("yyyy-MM-dd");
 		model.put("patientName", URLDecoder.decode(patientName,"UTF-8"));
 		for (Patient patient : patients)
@@ -157,6 +157,7 @@ public class PatientListController extends SimpleFormController {
 		Format formatter = new SimpleDateFormat("yyyy-MM-dd");
 		data=new HashMap<String, Object>();
 		data.put("pid", patient.getPatientId());
+		data.put("identifier", patient.getPatientIdentifier());
 		data.put("name", patient.getPersonName());
 		String bod = formatter.format(patient.getBirthdate());
 		data.put("DOB", bod);
