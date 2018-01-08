@@ -7,7 +7,7 @@
 	<classpathentry kind="lib" path="metadata"/>
 	<classpathentry kind="lib" path="lib-common/junit-3.8.1.jar"/>
 	<classpathentry kind="lib" path="lib-common/web-openmrs-api-1.5.0.7125-dev.jar"/>
-	<classpathentry kind="lib" path="lib-common/openmrs-api-1.5.0.7125-dev.jar"/>
+	<classpathentry kind="lib" path="lib-common/openmrs-api-1.5.0.7125-dev.jar" sourcepath="lib-common/openmrs-api-1.5.0.7125-dev.jar"/>
 	<classpathentry kind="lib" path="lib-common/commons-logging-1.0.4.jar"/>
 	<classpathentry kind="lib" path="lib-common/spring-2.5.1.jar"/>
 	<classpathentry kind="lib" path="lib-common/spring-webmvc.jar"/>

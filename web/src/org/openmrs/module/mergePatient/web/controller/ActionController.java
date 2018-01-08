@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -280,22 +281,46 @@ public class ActionController extends SimpleFormController {
 		List<Object> merged=new ArrayList<Object>();
 		for (Encounter encounter : patientBEncounters) {
 			if (request.getParameter("en_" + encounter.getEncounterId()) != null) {
-				Encounter en = new Encounter();
-				en.setForm(encounter.getForm());
-				en.setCreator(encounter.getCreator());
-				en.setDateCreated(new Date());
-				en.setPatient(patientA);
-				en.setProvider(encounter.getCreator());
-				en.setEncounterType(encounter.getEncounterType());
-				en.setLocation(encounter.getLocation());
-				en.setEncounterDatetime(new Date());
-				Context.getEncounterService().voidEncounter(encounter, "Duplication of patient Identifier(s)  #" + patientA.getIdentifiers());
-				Context.getEncounterService().saveEncounter(en);
-				merged.add(en.getEncounterType());
-				System.out.println(merged);
+				Encounter newEncounter = new Encounter();
+				newEncounter.setCreator(encounter.getCreator());
+				newEncounter.setDateCreated(encounter.getDateCreated());
+				newEncounter.setPatient(patientA);
+				newEncounter.setProvider(encounter.getCreator());
+				newEncounter.setEncounterType(encounter.getEncounterType());
+				newEncounter.setLocation(encounter.getLocation());
+				newEncounter.setEncounterDatetime(encounter.getEncounterDatetime());
+				mergeObs(encounter.getAllObs(),newEncounter);
+				Context.getEncounterService().saveEncounter(newEncounter);
+				Context.getEncounterService().voidEncounter(encounter, "Duplication of patient Id  #" + patientA.getPatientId());
 			}
 		}
 	return merged;
+	}
+	
+	private Encounter mergeObs(Set<Obs> oldObs,Encounter newEncounter)
+	{
+		for (Obs obs : oldObs) {
+            Set<Obs> obsList = traverse(obs);
+            for (Obs o : obsList) {
+	            newEncounter.addObs(o);
+	        }
+        }
+        return newEncounter;
+	}
+	
+	private Set<Obs> traverse(Obs obs)
+	{ 
+	  Obs temp=new Obs();
+	  Set<Obs> obsList=new HashSet<Obs>();
+	  temp=temp.newInstance(obs);
+      obsList.add(temp);
+      if(obs.isObsGrouping() && obs.hasGroupMembers())
+      {
+        for(Obs o : obs.getGroupMembers()) {
+       	 	traverse(o);
+       	}
+      }
+		return obsList;
 	}
 }
 
