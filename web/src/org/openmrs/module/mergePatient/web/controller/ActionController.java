@@ -205,8 +205,6 @@ public class ActionController extends SimpleFormController {
 		List<PatientIdentifier> patientBIdentifiers = patientB.getActiveIdentifiers();
 		Collection<PatientProgram> patientBPrograms = Context.getProgramWorkflowService().getPatientPrograms(patientB);
 		
-		Map<String, Object> model = new HashMap<String, Object>();
-		String message="";
 		List<Object> encounterMessage = MergeEncounter(request,patientBEncounters,patientA,patientB);
 		List<Object> programMessage = MergeProgram(request,patientBPrograms,patientA,patientB);
 		List<Object> identifierMessage = MergeIdentifier(request,patientBIdentifiers,patientA,patientB);
@@ -289,7 +287,7 @@ public class ActionController extends SimpleFormController {
 				newEncounter.setEncounterType(encounter.getEncounterType());
 				newEncounter.setLocation(encounter.getLocation());
 				newEncounter.setEncounterDatetime(encounter.getEncounterDatetime());
-				mergeObs(encounter.getAllObs(),newEncounter);
+				merged.add(mergeObs(encounter.getAllObs(),newEncounter));
 				Context.getEncounterService().saveEncounter(newEncounter);
 				Context.getEncounterService().voidEncounter(encounter, "Duplication of patient Id  #" + patientA.getPatientId());
 			}
