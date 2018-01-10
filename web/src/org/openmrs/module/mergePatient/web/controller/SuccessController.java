@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,14 +78,29 @@ public class SuccessController extends SimpleFormController {
 	@Override
 	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {
 		
-		String en=request.getParameter("en");		
-		String pr=request.getParameter("pr");		
-		String id=request.getParameter("id");		
+		Enumeration params=request.getParameterNames();	
 		Map<String, Object> model = new HashMap<String, Object>();
-		
-		model.put("en", en);
-		model.put("pr", pr);
-		model.put("id", id);
+		ArrayList<Encounter> encounters=new ArrayList<Encounter>();
+		System.out.println(params);
+		while(params.hasMoreElements())
+		{
+			
+			String p = String.valueOf(params.nextElement());
+			System.out.println(p);
+			if(p.contains("en_"))
+			{
+				Integer enId=Integer.parseInt(request.getParameter(p));
+				Encounter en=Context.getEncounterService().getEncounter(enId);
+				if(en!=null)
+				encounters.add(en);
+			}
+			else
+			{
+				model.put(p, request.getParameter(p));
+				System.out.println(p+" : "+request.getParameter(p));
+			}
+		}
+		model.put("encounters", encounters);
 		return model;
 	}
 	

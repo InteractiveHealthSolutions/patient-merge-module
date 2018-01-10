@@ -194,7 +194,6 @@ public class ActionController extends SimpleFormController {
 	@Override
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object,
 	                                             BindException exceptions) throws Exception {
-		System.out.println(request.getParameterMap());
 		int patientAId = Integer.parseInt(request.getParameter("patientA"));
 		int patientBId = Integer.parseInt(request.getParameter("patientB"));
 		
@@ -205,7 +204,7 @@ public class ActionController extends SimpleFormController {
 		List<PatientIdentifier> patientBIdentifiers = patientB.getActiveIdentifiers();
 		Collection<PatientProgram> patientBPrograms = Context.getProgramWorkflowService().getPatientPrograms(patientB);
 		
-		List<Object> encounterMessage = MergeEncounter(request,patientBEncounters,patientA,patientB);
+		List<Encounter> encounterMessage = MergeEncounter(request,patientBEncounters,patientA,patientB);
 		List<Object> programMessage = MergeProgram(request,patientBPrograms,patientA,patientB);
 		List<Object> identifierMessage = MergeIdentifier(request,patientBIdentifiers,patientA,patientB);
 		try
@@ -216,8 +215,17 @@ public class ActionController extends SimpleFormController {
 		{
 		logger.error(ex);
 		}
-		
-		return new ModelAndView(new RedirectView("/openmrs/module/mergePatient/success.form?en="+encounterMessage.size()+"&pr="+programMessage.size()+"&id="+identifierMessage.size()));
+		RedirectView model = new RedirectView("/openmrs/module/mergePatient/success.form");
+		for (Encounter en : encounterMessage) {
+			model.addStaticAttribute("en_"+en.getEncounterId(), en.getEncounterId());   
+        }
+		model.addStaticAttribute("pid", patientA.getPatientId());   
+		model.addStaticAttribute("en", encounterMessage.size());   
+        model.addStaticAttribute("pr", programMessage.size());
+		model.addStaticAttribute("id", identifierMessage.size());
+		model.addStaticAttribute("pname", patientA.getPersonName().toString());   
+		model.addStaticAttribute("identifier", patientA.getPatientIdentifier().getIdentifier());   
+		return new ModelAndView(model);
 		
 	}
 	
@@ -275,8 +283,8 @@ public class ActionController extends SimpleFormController {
 	return merged;
 	}
 
-	private List<Object> MergeEncounter(HttpServletRequest request,List<Encounter> patientBEncounters,Patient patientA,Patient patientB){
-		List<Object> merged=new ArrayList<Object>();
+	private List<Encounter> MergeEncounter(HttpServletRequest request,List<Encounter> patientBEncounters,Patient patientA,Patient patientB){
+		List<Encounter> merged=new ArrayList<Encounter>();
 		for (Encounter encounter : patientBEncounters) {
 			if (request.getParameter("en_" + encounter.getEncounterId()) != null) {
 				Encounter newEncounter = new Encounter();
