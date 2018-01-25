@@ -35,6 +35,26 @@
 		<file>messages_ru.properties</file>
 	</messages>
 	
+	<dwr>
+		<allow>
+			<create creator="new" javascript="ObsProgramDWR">
+				<param name="class" value="org.openmrs.module.mergePatient.web.dwr.ObsProgramDWR"/>
+				<include method="getProgramByEncounter"/>
+				<include method="getProgram"/>
+				<include method="getProgramByPatient"/>
+				<include method="getAllPrograms"/>
+			</create>							
+			<convert converter="bean" match="org.openmrs.Program"/>
+			<convert converter="bean" match="org.openmrs.Encounter"/>
+			
+			
+			
+		</allow>
+		
+		<signatures>
+			<![CDATA[  ]]>
+		</signatures>	
+	</dwr>
 	
 </module>
 

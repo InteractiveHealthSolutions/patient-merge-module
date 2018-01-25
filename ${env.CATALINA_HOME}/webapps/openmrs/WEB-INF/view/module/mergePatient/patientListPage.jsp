@@ -38,8 +38,13 @@ $(document).ready(function(){
 	   		      	return false   	 
 	        	 }
 		     });
-			
-		});
+		//jugar	below
+		var data="${patientList}";
+		if(data.length<=2)
+		{
+			$("#dropDownTable").hide();
+		}
+	});
 		
 		
 </script>
@@ -55,7 +60,7 @@ $(document).ready(function(){
 </head>
 <body>
 	<form action="" method="post" id="Searchform">
-		<Table>
+		<Table id="dropDownTable">
 			<tr>
 				<td><spring:message
 						code="@MODULE_ID@.mergePatient.primaryPatient" />:</td>
@@ -66,8 +71,7 @@ $(document).ready(function(){
 						</c:forEach>
 				</select></td>
 				<td>&nbsp</td>
-				<td><spring:message
-						code="@MODULE_ID@.mergePatient.duplicatePatient" />:</td>
+				<td><spring:message code="@MODULE_ID@.mergePatient.duplicatePatient" />:</td>
 				<td><select name="duplicatePatient" id="duplicatePatient">
 						<c:forEach var="patient" items="${patientList}" varStatus="loop">
 							<option value='<c:out value="${patient.pid}" />'><c:out

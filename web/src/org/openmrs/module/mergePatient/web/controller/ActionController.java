@@ -48,6 +48,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
+
 /**
  * This controller backs the /web/module/basicmoduleForm.jsp page. This controller is tied to that
  * jsp page in the /metadata/moduleApplicationContext.xml file
@@ -96,10 +97,8 @@ public class ActionController extends SimpleFormController {
 		List<PatientIdentifier> patientAIndentifiers = patientA.getActiveIdentifiers();
 		List<PatientIdentifier> patientBIndentifiers = patientB.getActiveIdentifiers();
 		//Programs
-		Collection<PatientProgram> patientAPrograms = Context.getProgramWorkflowService().getCurrentPrograms(patientA,
-		    new Date());
-		Collection<PatientProgram> patientBPrograms = Context.getProgramWorkflowService().getCurrentPrograms(patientB,
-		    new Date());
+		Collection<PatientProgram> patientAPrograms = Context.getProgramWorkflowService().getPatientPrograms(patientA);
+		Collection<PatientProgram> patientBPrograms = Context.getProgramWorkflowService().getCurrentPrograms(patientB,new Date());
 		//Patient A
 		model.put("patientAName", patientA.getPersonName());
 		model.put("patientAId", patientA.getPatientId());
@@ -126,14 +125,25 @@ public class ActionController extends SimpleFormController {
 		model.put("patientAIdentifier", dataList);
 		
 		dataList = new ArrayList<Object>();
+		String patientAProgramjson="[";
 		for (PatientProgram patientAProgram : patientAPrograms) {
 			dataMap = new HashMap<String, Object>();
 			dataMap.put("id", patientAProgram.getPatientProgramId());
 			dataMap.put("name", patientAProgram.getProgram().getName());
 			dataMap.put("date", patientAProgram.getDateCreated());
 			dataList.add(dataMap);
+			
+			patientAProgramjson+="{\"id\": \""+patientAProgram.getPatientProgramId()+"\","
+					+ "\"name\": \""+patientAProgram.getProgram().getName()+"\","
+					+ "\"date\": \""+patientAProgram.getDateCreated()+"\"}, ";
+			
 		}
+		patientAProgramjson+="{}]";
+		
+		model.put("patientAProgramjson", patientAProgramjson);
+		
 		model.put("patientAProgram", dataList);
+		
 		
 		//Patient B
 		model.put("patientBName", patientB.getPersonName());
@@ -196,20 +206,25 @@ public class ActionController extends SimpleFormController {
 	                                             BindException exceptions) throws Exception {
 		int patientAId = Integer.parseInt(request.getParameter("patientA"));
 		int patientBId = Integer.parseInt(request.getParameter("patientB"));
-		
 		Patient patientB = Context.getPatientService().getPatient(patientBId);
 		Patient patientA = Context.getPatientService().getPatient(patientAId);
-		
 		List<Encounter> patientBEncounters = Context.getEncounterService().getEncountersByPatient(patientB);
 		List<PatientIdentifier> patientBIdentifiers = patientB.getActiveIdentifiers();
-		Collection<PatientProgram> patientBPrograms = Context.getProgramWorkflowService().getPatientPrograms(patientB);
-		
-		List<Encounter> encounterMessage = MergeEncounter(request,patientBEncounters,patientA,patientB);
-		List<Object> programMessage = MergeProgram(request,patientBPrograms,patientA,patientB);
+		//Collection<PatientProgram> patientBPrograms = Context.getProgramWorkflowService().getPatientPrograms(patientB);
+		List<Program> programs = Context.getProgramWorkflowService().getAllPrograms();
+		ArrayList<String> prgs=new ArrayList<String>();
+		for (Program program : programs) {
+			String prgTemp = request.getParameter(String.valueOf(program.getProgramId()));
+			if(prgTemp!=null && prgTemp!="")
+				prgs.add(request.getParameter(String.valueOf(program.getProgramId())));
+        }
+	        
+		List<Encounter> encounterMessage = MergeEncounter(request,patientBEncounters,patientA,patientB,prgs);
+		//List<Object> programMessage = MergeProgram(request,patientBPrograms,patientA,patientB);
 		List<Object> identifierMessage = MergeIdentifier(request,patientBIdentifiers,patientA,patientB);
 		try
 		{
-			Context.getPatientService().voidPatient(patientB, "Duplication of patient Identifier(s) #" + patientA.getIdentifiers());	
+			Context.getPatientService().voidPatient(patientB, "Duplication of patient Identifier(s) #" + patientA.getPatientId());	
 		}
 		catch(Exception ex)
 		{
@@ -221,11 +236,12 @@ public class ActionController extends SimpleFormController {
         }
 		model.addStaticAttribute("pid", patientA.getPatientId());   
 		model.addStaticAttribute("en", encounterMessage.size());   
-        model.addStaticAttribute("pr", programMessage.size());
+        //model.addStaticAttribute("pr", programMessage.size());
 		model.addStaticAttribute("id", identifierMessage.size());
 		model.addStaticAttribute("pname", patientA.getPersonName().toString());   
 		model.addStaticAttribute("identifier", patientA.getPatientIdentifier().getIdentifier());   
 		return new ModelAndView(model);
+		
 		
 	}
 	
@@ -283,7 +299,8 @@ public class ActionController extends SimpleFormController {
 	return merged;
 	}
 
-	private List<Encounter> MergeEncounter(HttpServletRequest request,List<Encounter> patientBEncounters,Patient patientA,Patient patientB){
+	private List<Encounter> MergeEncounter(HttpServletRequest request,List<Encounter> patientBEncounters,
+		Patient patientA,Patient patientB,ArrayList<String> prgs){
 		List<Encounter> merged=new ArrayList<Encounter>();
 		for (Encounter encounter : patientBEncounters) {
 			if (request.getParameter("en_" + encounter.getEncounterId()) != null) {
@@ -295,7 +312,7 @@ public class ActionController extends SimpleFormController {
 				newEncounter.setEncounterType(encounter.getEncounterType());
 				newEncounter.setLocation(encounter.getLocation());
 				newEncounter.setEncounterDatetime(encounter.getEncounterDatetime());
-				merged.add(mergeObs(encounter.getAllObs(),newEncounter));
+				merged.add(mergeObs(encounter.getAllObs(),newEncounter,patientA, prgs));
 				Context.getEncounterService().saveEncounter(newEncounter);
 				Context.getEncounterService().voidEncounter(encounter, "Duplication of patient Id  #" + patientA.getPatientId());
 			}
@@ -303,10 +320,10 @@ public class ActionController extends SimpleFormController {
 	return merged;
 	}
 	
-	private Encounter mergeObs(Set<Obs> oldObs,Encounter newEncounter)
+	private Encounter mergeObs(Set<Obs> oldObs,Encounter newEncounter, Patient patientA, ArrayList<String> prgs)
 	{
 		for (Obs obs : oldObs) {
-            Set<Obs> obsList = traverse(obs);
+            Set<Obs> obsList = traverse(obs,patientA, prgs);
             for (Obs o : obsList) {
 	            newEncounter.addObs(o);
 	        }
@@ -314,16 +331,51 @@ public class ActionController extends SimpleFormController {
         return newEncounter;
 	}
 	
-	private Set<Obs> traverse(Obs obs)
+	private Set<Obs> traverse(Obs obs, Patient patientA, ArrayList<String> prgs)
 	{ 
 	  Obs temp=new Obs();
 	  Set<Obs> obsList=new HashSet<Obs>();
 	  temp=temp.newInstance(obs);
+	  if(temp.getConcept().getConceptId()==576)
+      { 
+		  Integer pr_id = temp.getValueNumeric().intValue();
+		  PatientProgram patientProgramB = Context.getProgramWorkflowService().getPatientProgram(pr_id);
+		  
+		  if(prgs.size()>0)
+		  {
+			  for(int i=0;i<prgs.size();i++)
+			  {
+				  int pp=Integer.parseInt(prgs.get(i));
+					  PatientProgram patientProgramA = Context.getProgramWorkflowService().getPatientProgram(pp); 
+					  Program programA = patientProgramA.getProgram();
+					  Program programB = patientProgramB.getProgram();
+					  if(programB.getProgramId()==programA.getProgramId())
+					  {
+						  temp.setValueNumeric(patientProgramA.getPatientProgramId().doubleValue());
+						  break;
+					  }
+			  }
+		  }
+		  else
+		  {
+			  Collection<PatientProgram> patientProgramA = Context.getProgramWorkflowService().getPatientPrograms(patientA);
+			  Program programB = patientProgramB.getProgram();
+			  for (PatientProgram patientProgram : patientProgramA) {
+				  Program programA = patientProgram.getProgram();
+				  if(programB.getProgramId()==programA.getProgramId())
+				  {
+					  temp.setValueNumeric(patientProgram.getPatientProgramId().doubleValue());
+					  break;
+				  }
+			  }
+		  }
+      }
       obsList.add(temp);
+	  
       if(obs.isObsGrouping() && obs.hasGroupMembers())
       {
         for(Obs o : obs.getGroupMembers()) {
-       	 	traverse(o);
+       	 	traverse(o, patientA, prgs);
        	}
       }
 		return obsList;

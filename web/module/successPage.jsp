@@ -15,7 +15,7 @@ td{
 <body>
 <h3><spring:message code="@MODULE_ID@.mergePatient.success" /></h3>
 <span><c:out value=" ${en} "/> Encounter(s), 
-<c:out value=" ${id} "/> Identifier(s) <spring:message code="@MODULE_ID@.mergePatient.and" /> <c:out value=" ${pr} "/> Program(s) <spring:message code="@MODULE_ID@.mergePatient.merged" /></span> 
+<c:out value=" ${id} "/> Identifier(s) <spring:message code="@MODULE_ID@.mergePatient.merged" /></span> 
 <table>
 <tbody>
 <tr>
