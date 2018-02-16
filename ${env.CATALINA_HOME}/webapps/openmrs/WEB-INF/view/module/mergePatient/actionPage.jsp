@@ -15,8 +15,14 @@
 
 
 $(document).ready(function(){ 
+		 var url=window.location.href;
+		 if(url.includes("openmrstjk"))
+		 	url="/openmrstjk";
+		 else
+			 url="/openmrs";
 		 var programA=${patientAProgramjson};
 		 var allProgram=getAllPrograms();
+		 $("#dialog").hide();
 		 console.log(allProgram);
 			$('#primaryTable').DataTable({
 					 			    "paging" : true,
@@ -51,7 +57,7 @@ $(document).ready(function(){
 			      }
 			   });
 			   $('#swap').click(function(){
-				 	window.location.replace("/openmrs/module/mergePatient/action.form?patientA="+${patientBId}+"&patientB="+${patientAId});
+				 	window.location.replace(url+"/module/mergePatient/action.form?patientA="+${patientBId}+"&patientB="+${patientAId});
 			   });
 			   $( "#submitbtn" ).click(function( event ) {
 				   if(confirm('<spring:message code="@MODULE_ID@.mergePatient.confirmSubmit" />')==true)
@@ -65,7 +71,6 @@ $(document).ready(function(){
 					   
 					   if(programA.length==1 && program.length>0)
 					   {	alert("Add Program for this patient first.")
-						   document.getElementById("duplication").submit();
 					   }
 					   else if(programA.length>1 && program.length>0)
 					   {	
@@ -154,7 +159,7 @@ function formatDate(date) {
 	  var monthIndex = date.getMonth()+1;
 	  var year = date.getFullYear();
 	  if(monthIndex<10)
-		  monthIndex= '/0' + monthIndex;
+		  monthIndex= '0' + monthIndex;
 	  if(day<10)
 		  day ='0'+ day;
 	  return day + '/' + monthIndex + '/' + year;
@@ -192,6 +197,19 @@ function getAllPrograms()
 			   async:false
 			 } );
 	return program;
+}
+
+function onEncounterClick(data)
+{
+	var url=window.location.href;
+	 if(url.includes("openmrstjk"))
+	 	url="/openmrstjk";
+	 else
+		 url="/openmrs";
+	 
+	url=url+"/admin/encounters/encounter.form?encounterId="+data;
+	window.location.replace(url);
+
 }
 </script>
 
@@ -258,7 +276,7 @@ footer{
 				<tr>
 					<td><c:out value="${encounter.id}" /></td>
 					<td>Encounter</td>
-					<td><a href='/openmrs/admin/encounters/encounter.form?encounterId=<c:out value="${encounter.id}"/>'><c:out value="${encounter.name}" /></a></td>
+					<td><a onclick="onEncounterClick(${encounter.id})"><c:out value="${encounter.name}" /></a></td>
 					<td><c:out value="${encounter.date}" /></td>
 				</tr>
 			</c:forEach>
@@ -308,8 +326,8 @@ footer{
 								id='<c:out value="${encounter.id}"  />'></td>
 							<td><c:out value="${encounter.id}" /></td>
 							<td>Encounter</td>
-							<td><a href='/openmrs/admin/encounters/encounter.form?encounterId=<c:out value="${encounter.id}"/>'>
-								<c:out value="${encounter.name}" /></a></td>
+							<td><a onclick="onEncounterClick(${encounter.id})"><c:out value="${encounter.name}" /></a></td>
+							<c:out value="${encounter.name}" /></a></td>
 								<td><c:out value="${encounter.date}" /></td>
 						</tr>
 					</c:forEach>

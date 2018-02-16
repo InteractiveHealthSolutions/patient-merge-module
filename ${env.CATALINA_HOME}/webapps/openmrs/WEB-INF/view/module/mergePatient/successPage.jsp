@@ -11,6 +11,35 @@ td{
  padding-top: 10px;
 }
 </style>
+<script type="text/javascript">
+
+function onEncounterClick(data)
+{
+	var url=window.location.href;
+	 if(url.includes("openmrstjk"))
+	 	url="/openmrstjk";
+	 else
+		 url="/openmrs";
+	 
+	url=url+"/admin/encounters/encounter.form?encounterId="+data;
+	window.location.replace(url);
+
+}
+
+function onPatientClick(data)
+{
+	var url=window.location.href;
+	 if(url.includes("openmrstjk"))
+	 	url="/openmrstjk";
+	 else
+		 url="/openmrs";
+	 
+	url=url+"/patientDashboard.form?patientId="+data;
+	window.location.replace(url);
+
+}
+
+</script>
 </head>
 <body>
 <h3><spring:message code="@MODULE_ID@.mergePatient.success" /></h3>
@@ -19,7 +48,7 @@ td{
 <table>
 <tbody>
 <tr>
-<td>Merged Patient:</td><td> <a href="/openmrs/patientDashboard.form?patientId=${pid}"><c:out value=" ${pname} "/> (<c:out value="${identifier}"/>)</a></td>
+<td>Merged Patient:</td><td> <a onclick="onPatientClick(${pid})"><c:out value=" ${pname} "/> (<c:out value="${identifier}"/>)</a></td>
 </tr>
 <tr>
 <td><spring:message code="@MODULE_ID@.mergePatient.PatientEncounter" /> (s): </td>
@@ -27,13 +56,13 @@ td{
 <c:forEach var = "encounter" items="${encounters}">
 	<tr>
 		<td></td>
-		<td> <a href="/openmrs/admin/encounters/encounter.form?encounterId=${encounter.id}">${encounter.encounterType.name} (${encounter.id})</a></td>
+		<td> <a onclick="onEncounterClick(${encounter.id})">${encounter.encounterType.name} (${encounter.id})</a></td>
 	</tr>
 </c:forEach>
 	
 </tbody>
 </table>
-<a id='foot' href="/openmrs/module/mergePatient/search.form"><spring:message code="@MODULE_ID@.mergePatient.searchPage" /></a>
+<a id='foot' href="/openmrstjk/module/mergePatient/search.form"><spring:message code="@MODULE_ID@.mergePatient.searchPage" /></a>
 </body>
 </html>
 

@@ -15,6 +15,11 @@
 
 
 $(document).ready(function(){ 
+		 var url=window.location.href;
+		 if(url.includes("openmrstjk"))
+		 	url="/openmrstjk";
+		 else
+			 url="/openmrs";
 		 var programA=${patientAProgramjson};
 		 var allProgram=getAllPrograms();
 		 $("#dialog").hide();
@@ -52,7 +57,7 @@ $(document).ready(function(){
 			      }
 			   });
 			   $('#swap').click(function(){
-				 	window.location.replace("/openmrs/module/mergePatient/action.form?patientA="+${patientBId}+"&patientB="+${patientAId});
+				 	window.location.replace(url+"/module/mergePatient/action.form?patientA="+${patientBId}+"&patientB="+${patientAId});
 			   });
 			   $( "#submitbtn" ).click(function( event ) {
 				   if(confirm('<spring:message code="mergePatient.mergePatient.confirmSubmit" />')==true)
@@ -193,6 +198,19 @@ function getAllPrograms()
 			 } );
 	return program;
 }
+
+function onEncounterClick(data)
+{
+	var url=window.location.href;
+	 if(url.includes("openmrstjk"))
+	 	url="/openmrstjk";
+	 else
+		 url="/openmrs";
+	 
+	url=url+"/admin/encounters/encounter.form?encounterId="+data;
+	window.location.replace(url);
+
+}
 </script>
 
 <style type="text/css">
@@ -258,7 +276,7 @@ footer{
 				<tr>
 					<td><c:out value="${encounter.id}" /></td>
 					<td>Encounter</td>
-					<td><a href='/openmrs/admin/encounters/encounter.form?encounterId=<c:out value="${encounter.id}"/>'><c:out value="${encounter.name}" /></a></td>
+					<td><a onclick="onEncounterClick(${encounter.id})"><c:out value="${encounter.name}" /></a></td>
 					<td><c:out value="${encounter.date}" /></td>
 				</tr>
 			</c:forEach>
@@ -308,8 +326,8 @@ footer{
 								id='<c:out value="${encounter.id}"  />'></td>
 							<td><c:out value="${encounter.id}" /></td>
 							<td>Encounter</td>
-							<td><a href='/openmrs/admin/encounters/encounter.form?encounterId=<c:out value="${encounter.id}"/>'>
-								<c:out value="${encounter.name}" /></a></td>
+							<td><a onclick="onEncounterClick(${encounter.id})"><c:out value="${encounter.name}" /></a></td>
+							<c:out value="${encounter.name}" /></a></td>
 								<td><c:out value="${encounter.date}" /></td>
 						</tr>
 					</c:forEach>

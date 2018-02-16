@@ -14,6 +14,5 @@
 	<classpathentry kind="lib" path="lib-common/servlet-api.jar"/>
 	<classpathentry kind="lib" path="lib-common/hibernate3.jar"/>
 	<classpathentry kind="lib" path="lib-common/tests-openmrs-api-1.5.0.7125-dev.jar"/>
-	<classpathentry kind="lib" path="C:/Users/IHS002/Downloads/gson-1.4.jar/gson-1.4.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
