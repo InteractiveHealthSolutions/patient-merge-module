@@ -141,7 +141,6 @@ $(document).ready(function(){
 							document.getElementById("duplication").submit();
 					   }
 					}
-				   //$("#duplication").submit();
 				 });
 			   $("#programSelect").click(function(){
 				   for(var q=0;q<allProgram.length;q++)
@@ -327,23 +326,9 @@ footer{
 							<td><c:out value="${encounter.id}" /></td>
 							<td>Encounter</td>
 							<td><a onclick="onEncounterClick(${encounter.id})"><c:out value="${encounter.name}" /></a></td>
-							<c:out value="${encounter.name}" /></a></td>
-								<td><c:out value="${encounter.date}" /></td>
+							<td><c:out value="${encounter.date}" /></td>
 						</tr>
 					</c:forEach>
-					<%-- <c:forEach var="program" items="${patientBProgram}"
-						varStatus="loop">
-						<tr>
-							<td><input type="checkbox"
-								name='pg_<c:out value="${program.id}"  />'
-								value='<c:out value="${program.id}"  />'
-								id='<c:out value="${program.id}"  />'></td>
-							<td><c:out value="${program.id}" /></td>
-							<td>Program</td>
-							<td><c:out value="${program.name}" /></td>
-							<td><c:out value="${program.date}" /></td>
-						</tr>
-					</c:forEach> --%>
 				</tbody>
 			</Table>
 		</div>

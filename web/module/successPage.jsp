@@ -49,6 +49,7 @@ function onSearchClick()
 	window.location.replace(url+"/module/mergePatient/search.form");
 }
 
+
 </script>
 </head>
 <body>

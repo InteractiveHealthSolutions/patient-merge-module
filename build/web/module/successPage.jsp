@@ -39,6 +39,24 @@ function onPatientClick(data)
 
 }
 
+function onSearchClick()
+{
+	var url=window.location.href;
+	if(url.includes("openmrstjk"))
+	 	url="/openmrstjk";
+	 else
+		 url="/openmrs";
+	window.location.replace(url+"/module/mergePatient/search.form");
+}
+
+function preventBack() {
+    window.history.forward();
+}
+ window.onunload = function() {
+    null;
+};
+setTimeout("preventBack()", 0);
+
 </script>
 </head>
 <body>
@@ -62,7 +80,7 @@ function onPatientClick(data)
 	
 </tbody>
 </table>
-<a id='foot' href="/openmrstjk/module/mergePatient/search.form"><spring:message code="mergePatient.mergePatient.searchPage" /></a>
+<a id='foot' onclick="onSearchClick()"><spring:message code="mergePatient.mergePatient.searchPage" /></a>
 </body>
 </html>
 
