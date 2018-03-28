@@ -49,13 +49,6 @@ function onSearchClick()
 	window.location.replace(url+"/module/mergePatient/search.form");
 }
 
-function preventBack() {
-    window.history.forward();
-}
- window.onunload = function() {
-    null;
-};
-setTimeout("preventBack()", 0);
 
 </script>
 </head>

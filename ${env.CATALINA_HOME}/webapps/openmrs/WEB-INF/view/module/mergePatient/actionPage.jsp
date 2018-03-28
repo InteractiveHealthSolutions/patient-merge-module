@@ -16,6 +16,10 @@
 
 $(document).ready(function(){ 
 		 var url=window.location.href;
+		var patientAProgram=[];
+		var count1=0,count2=0,count3=0;
+		var encounter_type=["TB03","TB03u","Form89","Specimen Collection","Regimen","Adverse Event","Yellow Card","Transfer In","Transfer Out","TB03Xdr","Lab Result"]
+		var submitBool=false;
 		 if(url.includes("openmrstjk"))
 		 	url="/openmrstjk";
 		 else
@@ -23,7 +27,10 @@ $(document).ready(function(){
 		 var programA=${patientAProgramjson};
 		 var allProgram=getAllPrograms();
 		 $("#dialog").hide();
-		 console.log(allProgram);
+		 $("#dialog1").hide();
+		 $("#dialog2").hide();
+		 $("#dialog3").hide();
+		 
 			$('#primaryTable').DataTable({
 					 			    "paging" : true,
 					 				"lengthChange" : false,
@@ -59,32 +66,44 @@ $(document).ready(function(){
 			   $('#swap').click(function(){
 				 	window.location.replace(url+"/module/mergePatient/action.form?patientA="+${patientBId}+"&patientB="+${patientAId});
 			   });
+			   
 			   $( "#submitbtn" ).click(function( event ) {
+				   
 				   if(confirm('<spring:message code="@MODULE_ID@.mergePatient.confirmSubmit" />')==true)
 					{  
+					   var i = 1,index=[];
+					   $('.it').each(function() {
+					       if (this.checked) {
+					           index.push(i);
+					       }
+					       i++;
+					   });
 					   var selected = [];
+					   var selectedVal = [];
 					   var patientProgram=[]
 					   $('#duplicateTable input[type=checkbox]').each(function() {
 					       selected.push($(this).attr('name'));
+					       selectedVal.push($(this).attr('value'));
 					   });
 					   var program=getPrograms(selected);
-					   
+					  
 					   if(programA.length==1 && program.length>0)
-					   {	alert("Add Program for this patient first.")
+					   {
+						   alert('<spring:message code="@MODULE_ID@.mergePatient.addProgramException" />')
 					   }
 					   else if(programA.length>1 && program.length>0)
 					   {	
-						   for(var i=0;i<program.length;i++)
+						   for(var i=0;i<index.length;i++)
 						   {
 							for(var j=0;j<programA.length-1;j++)
 							{
-							if(program[i]!=null)
+							if(program[index[i]]!=null)
 							{ 
-								if(program[i][0].name==programA[j].name)
+								if(program[index[i]][0].name==programA[j].name)
 								{
-									if(program[i][0].found==undefined)
-										program[i][0].found=[];
-									program[i][0].found.push(programA[j].id);
+									if(program[index[i]][0].found==undefined)
+										program[index[i]][0].found=[];
+									program[index[i]][0].found.push(programA[j].id);
 								}
 							}
 						   }
@@ -93,32 +112,36 @@ $(document).ready(function(){
 						   for(q=0;q<allProgram.length;q++)
 						   { 
 							    bool=false; 
-						   for(var i=0;i<program.length;i++)
+						   for(var i=0;i<index.length;i++)
 						   { 
-							   if(program[i]!=null)
+							   if(program[index[i]]!=null)
 								{
-									if(program[i][0].found.length>1)
+								   if(program[index[i]][0].found!=undefined)
+								   {
+									if(program[index[i]][0].found.length>1)
 									{ 
 										for(var j=0;j<programA.length-1;j++)
 										{
-											console.log(allProgram[q].name)
-										 	 
-										 if(program[i][0].name==programA[j].name && programA[j].name==allProgram[q].name)
-										{	
+									
+										 if(program[index[i]][0].name==programA[j].name && programA[j].name==allProgram[q].name)
+										 {	
 											 bool=true;
 											 break;
-										} 
-							   			else
-								   			console.log(program[i]); 
+										 }
 						   				 }  
 						   			}
-						   		} 
+								   }
+								   else
+								   {
+									   alert('<spring:message code="@MODULE_ID@.mergePatient.addProgramException" />')
+									   submitBool=false;
+								   }
+						   		}
 							   if(bool==true)
 								   break;
 						   }
 						   if(bool==true)
 						   {
-							console.log(bool +" "+ allProgram[q].name);
 							$( "#dialog" ).dialog();
 							$( "#programDiv select").remove();
 							$( "#programDiv snap").remove();
@@ -130,27 +153,150 @@ $(document).ready(function(){
 									$( "#"+allProgram[q].id ).append("<option value='"+programA[i].id+"' id='"+programA[i].id+"'>"+programA[i].name+"-"+formatDate(programA[i].date)+"</option>");
 								}
 							}
+							submitBool=false;
+						  }
+						  else
+						  {
+								submitBool=true;	
 						  }
 						}
 						  if(q==allProgram.length && bool==false) 
-						  document.getElementById("duplication").submit();
-					   }
-					   else if(program.length==0)
-					   {
-							alert("here we are 2")
-							document.getElementById("duplication").submit();
+						  {
+							 for(var i=0;i<index.length;i++)
+								{
+								   if(program[index[i]]==null)
+								   {
+									for(var j=0;j<programA.length-1;j++)
+									{
+									if(selectedVal[index[i]]!=undefined && (selectedVal[index[i]].toString()=="Specimen Collection" || selectedVal[index[i]].toString()=="Transfer In" || selectedVal[index[i]].toString()=="Transfer Out"))
+						    	 	 {
+						    			$( "#programDiv1 select").remove();
+										$( "#programDiv1 snap").remove();
+										$( "#programDiv1" ).append("<snap>Select any one program: </snap><select id='program1'></select>");
+										count1=0;
+										for(var k=0;k<programA.length-1;k++)
+										{
+											if(programA[k].name=="MDR-TB PROGRAM" || programA[k].name=="DOTS Program")
+											{
+												count1++;
+												$( "#program1").append("<option value='"+programA[k].id+"' id='"+programA[k].id+"'>"+programA[k].name+"-"+formatDate(programA[k].date)+"</option>");
+											}
+										}
+										if(count1>1)
+										{
+											$( "#dialog1" ).dialog();
+											submitBool=false;
+										}
+										else if(count1==0)
+										{
+											alert('<spring:message code="@MODULE_ID@.mergePatient.addProgramException" />');
+											submitBool=false;
+										}
+						    	 	}
+						    		else if(selectedVal[index[i]]!=undefined &&  (selectedVal[index[i]].toString()=="TB03" || selectedVal[index[i]].toString()=="Form89"))
+						    		{
+						    			$( "#programDiv2 select").remove();
+										$( "#programDiv2 snap").remove();
+										$( "#programDiv2" ).append("<snap>Select any one program: </snap><select id='program2'></select>");
+										count2=0;
+										for(var k=0;k<programA.length-1;k++)
+										{
+											if(programA[k].name=="DOTS Program")
+											{
+												count2++;	
+												$( "#program2").append("<option value='"+programA[k].id+"' id='"+programA[k].id+"'>"+programA[k].name+"-"+formatDate(programA[k].date)+"</option>");
+											}
+										}
+										if(count2>1)
+										{
+											$( "#dialog2" ).dialog();
+											submitBool=false;
+										}
+										else if(count2==0)
+										{
+											alert("Add Program for this patient first.")
+											submitBool=false;
+										}
+						    		}
+									else if(selectedVal[index[i]]!=undefined && selectedVal[index[i]].toString()!="Lab Result")
+						    		{
+										$( "#programDiv3 select").remove();
+										$( "#programDiv3 snap").remove();
+										$( "#programDiv3" ).append("<snap>Select any one program: </snap><select id='program3'></select>");
+										count3=0;
+										for(var k=0;k<programA.length-1;k++)
+										{
+											if(programA[k].name=="MDR-TB PROGRAM")
+											{	
+												count3++;
+												$( "#program3").append("<option value='"+programA[k].id+"' id='"+programA[k].id+"'>"+programA[k].name+"-"+formatDate(programA[k].date)+"</option>");
+											}
+										}
+										if(count3>1)
+										{
+											$( "#dialog3" ).dialog();
+											submitBool=false;
+										}
+										else if(count3==0)
+										{
+											alert('<spring:message code="@MODULE_ID@.mergePatient.addProgramException" />')
+											submitBool=false;
+										}
+										
+						    		}
+								   }
+								   }  
+								}
+						  }
+						  if(submitBool==true && count1<=1 && count2<=1 && count3<=1)
+					      {
+							  	inputInjection()
+							 	document.getElementById("duplication").submit();
+						  }
 					   }
 					}
 				 });
+			   
 			   $("#programSelect").click(function(){
 				   for(var q=0;q<allProgram.length;q++)
 				   { 
 				   var input = $("<input>").attr("type", "hidden").attr("name", allProgram[q].id).val($("#"+allProgram[q].id).val());
 					$('#duplication').append($(input)); 
-				   }document.getElementById("duplication").submit();
+				   }
+				   inputInjection();
+				   document.getElementById("duplication").submit();
+			   });
+			   
+			   $("#programSelect1").click(function(){
+				   
+				   inputInjection()
+				   document.getElementById("duplication").submit();
+			   });
+			   
+			   $("#programSelect2").click(function(){
+				   inputInjection()
+				   document.getElementById("duplication").submit();
+			   });
+			   
+			   $("#programSelect3").click(function(){
+				   
+				   inputInjection()
+				   document.getElementById("duplication").submit();
 			   });
 			   
 });	
+
+function inputInjection()
+{
+	   var input = jQuery("<input>").attr("type", "hidden").attr("name", "programByName1").val(jQuery("#program1").val());
+		 jQuery('#duplication').append(jQuery(input));
+
+	   	 input = jQuery("<input>").attr("type", "hidden").attr("name", "programByName2").val(jQuery("#program2").val());
+	   	jQuery('#duplication').append(jQuery(input));
+
+	   	 input = jQuery("<input>").attr("type", "hidden").attr("name", "programByName3").val(jQuery("#program3").val());
+	   	jQuery('#duplication').append(jQuery(input));
+}
 
 function formatDate(date) {
 	  date=new Date(date);
@@ -181,6 +327,36 @@ function getPrograms(selected)
 				},
 			   async:false
 			 } );
+	   }
+	}
+	return program;
+}
+
+function getProgramsByName(data)
+{
+	var program=[];
+	var encounter_type=["TB03","TB03u","Form89","Specimen Collection","Regimen","Adverse Event","Yellow Card","Transfer In","Transfer Out","TB03Xdr","Lab Result"]
+	for(var i=0;i<data.length-1;i++)
+	{
+	for(var j=0;j<encounter_type.length;j++)
+	   {   
+    	if(data[i][3].search(encounter_type[j])!=-1)
+    	{
+    		if(encounter_type[j]=="Specimen Collection" || encounter_type[j]=="Transfer In" || encounter_type[j]=="Transfer Out")
+    	 	{
+    			program.push("MDR-TB PROGRAM")
+    			program.push("DOTS Program")
+    	 	}
+    		else if(encounter_type[j]=="TBO3" || encounter_type[j]=="Form89")
+    		{
+    			program.push("DOTS Program")
+    		}
+			else if(encounter_type[j]!="Lab Result")
+    		{
+				program.push("MDR-TB PROGRAM")		
+    		}
+    		
+    	}
 	   }
 	}
 	return program;
@@ -307,7 +483,7 @@ footer{
 					<c:forEach var="identifier" items="${patientBIdentifier}"
 						varStatus="loop">
 						<tr>
-							<td><input type="checkbox"
+							<td><input type="checkbox" class="it"
 								name='id_<c:out value="${identifier.id}"  />'
 								id='<c:out value="${identifier.id}"  />'></td>
 							<td><c:out value="${identifier.id}" /></td>
@@ -319,9 +495,9 @@ footer{
 					<c:forEach var="encounter" items="${patientBEncounter}"
 						varStatus="loop">
 						<tr>
-							<td><input type="checkbox"
+							<td><input type="checkbox" class="it"
 								name='en_<c:out value="${encounter.id}"  />'
-								value='<c:out value="${encounter.id}"  />'
+								value='<c:out value="${encounter.name}"  />'
 								id='<c:out value="${encounter.id}"  />'></td>
 							<td><c:out value="${encounter.id}" /></td>
 							<td>Encounter</td>
@@ -336,6 +512,19 @@ footer{
 <div id="dialog" title="Select Program">
 	<div id="programDiv"></div>
   <button id="programSelect">Done</button>
+</div>
+
+<div id="dialog1" title="Select Program">
+	<div id="programDiv1"></div>
+  <button id="programSelect1">Done</button>
+</div>
+<div id="dialog2" title="Select Program">
+	<div id="programDiv2"></div>
+  <button id="programSelect2">Done</button>
+</div>
+<div id="dialog3" title="Select Program">
+	<div id="programDiv3"></div>
+  <button id="programSelect3">Done</button>
 </div>
 </body>
 </html>

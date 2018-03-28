@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.omg.CORBA.Request;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
@@ -218,8 +219,16 @@ public class ActionController extends SimpleFormController {
 			if(prgTemp!=null && prgTemp!="")
 				prgs.add(request.getParameter(String.valueOf(program.getProgramId())));
         }
-	        
-		List<Encounter> encounterMessage = MergeEncounter(request,patientBEncounters,patientA,patientB,prgs);
+	    String data=request.getParameter("programByName");
+	    System.out.println("========data:"+data);
+	    String data1=request.getParameter("programByName1");
+	    System.out.println("========data:"+data1);
+	    String data2=request.getParameter("programByName2");
+	    System.out.println("========data:"+data2);
+	    String data3=request.getParameter("programByName3");
+	    System.out.println("========data:"+data3);
+	   
+	    List<Encounter> encounterMessage = MergeEncounter(request,patientBEncounters,patientA,patientB,prgs);
 		//List<Object> programMessage = MergeProgram(request,patientBPrograms,patientA,patientB);
 		List<Object> identifierMessage = MergeIdentifier(request,patientBIdentifiers,patientA,patientB);
 		try
@@ -239,10 +248,8 @@ public class ActionController extends SimpleFormController {
         //model.addStaticAttribute("pr", programMessage.size());
 		model.addStaticAttribute("id", identifierMessage.size());
 		model.addStaticAttribute("pname", patientA.getPersonName().toString());   
-		model.addStaticAttribute("identifier", patientA.getPatientIdentifier().getIdentifier());   
+		model.addStaticAttribute("identifier", patientA.getPatientIdentifier().getIdentifier()); 
 		return new ModelAndView(model);
-		
-		
 	}
 	
 	
@@ -312,7 +319,7 @@ public class ActionController extends SimpleFormController {
 				newEncounter.setEncounterType(encounter.getEncounterType());
 				newEncounter.setLocation(encounter.getLocation());
 				newEncounter.setEncounterDatetime(encounter.getEncounterDatetime());
-				merged.add(mergeObs(encounter.getAllObs(),newEncounter,patientA, prgs));
+				merged.add(mergeObs(encounter.getAllObs(),newEncounter,patientA, prgs,request));
 				Context.getEncounterService().saveEncounter(newEncounter);
 				Context.getEncounterService().voidEncounter(encounter, "Duplication of patient Id  #" + patientA.getPatientId());
 			}
@@ -320,18 +327,57 @@ public class ActionController extends SimpleFormController {
 	return merged;
 	}
 	
-	private Encounter mergeObs(Set<Obs> oldObs,Encounter newEncounter, Patient patientA, ArrayList<String> prgs)
+	private Encounter mergeObs(Set<Obs> oldObs,Encounter newEncounter, Patient patientA, ArrayList<String> prgs,HttpServletRequest request)
 	{
 		for (Obs obs : oldObs) {
-            Set<Obs> obsList = traverse(obs,patientA, prgs);
+            Set<Obs> obsList = traverse(obs,patientA, prgs,request);
             for (Obs o : obsList) {
 	            newEncounter.addObs(o);
 	        }
         }
+		boolean found=false;
+		for (Obs o : newEncounter.getAllObs()) {
+	        if(o.getConcept().getConceptId()==576)
+	        found=true;
+        }
+		if(found==false)
+		{
+			String data=request.getParameter("programByName");
+		    String data1=request.getParameter("programByName1");
+		    String data2=request.getParameter("programByName2");
+		    String data3=request.getParameter("programByName3");
+			PatientProgram program=null;
+			if(data!=null && data!="")
+				program=Context.getProgramWorkflowService().getPatientProgram(Integer.parseInt(data));
+			else if(data1!=null && data1!="" && (newEncounter.getEncounterType().getName().equals("Specimen Collection") 
+			|| newEncounter.getEncounterType().getName().equals("Transfer In") || newEncounter.getEncounterType().getName().equals("Transfer Out")))
+			{	
+				program=Context.getProgramWorkflowService().getPatientProgram(Integer.parseInt(data1));
+			}
+			else if(data2!=null && data2!="" &&  (newEncounter.getEncounterType().getName().equals("TB03") ||
+			newEncounter.getEncounterType().getName().equals("Form89")))
+			{
+				program=Context.getProgramWorkflowService().getPatientProgram(Integer.parseInt(data2));
+			}
+			else if(data3!=null && data3!="" && !newEncounter.getEncounterType().getName().equals("Lab Result"))
+			{
+				program=Context.getProgramWorkflowService().getPatientProgram(Integer.parseInt(data3));
+			}
+			if(program!=null)
+			{
+				Obs o =new Obs();
+				o.setDateCreated(new Date());
+				o.setEncounter(newEncounter);
+				o.setValueNumeric(program.getPatientProgramId().doubleValue());
+				o.setConcept(Context.getConceptService().getConcept(576));
+				o.setCreator(newEncounter.getPatient().getPersonCreator());
+				newEncounter.addObs(o);
+			}
+		}   
         return newEncounter;
 	}
 	
-	private Set<Obs> traverse(Obs obs, Patient patientA, ArrayList<String> prgs)
+	private Set<Obs> traverse(Obs obs, Patient patientA, ArrayList<String> prgs, HttpServletRequest request)
 	{ 
 	  Obs temp=new Obs();
 	  Set<Obs> obsList=new HashSet<Obs>();
@@ -375,7 +421,7 @@ public class ActionController extends SimpleFormController {
       if(obs.isObsGrouping() && obs.hasGroupMembers())
       {
         for(Obs o : obs.getGroupMembers()) {
-       	 	traverse(o, patientA, prgs);
+       	 	traverse(o, patientA, prgs,request);
        	}
       }
 		return obsList;
