@@ -219,14 +219,6 @@ public class ActionController extends SimpleFormController {
 			if(prgTemp!=null && prgTemp!="")
 				prgs.add(request.getParameter(String.valueOf(program.getProgramId())));
         }
-	    String data=request.getParameter("programByName");
-	    System.out.println("========data:"+data);
-	    String data1=request.getParameter("programByName1");
-	    System.out.println("========data:"+data1);
-	    String data2=request.getParameter("programByName2");
-	    System.out.println("========data:"+data2);
-	    String data3=request.getParameter("programByName3");
-	    System.out.println("========data:"+data3);
 	   
 	    List<Encounter> encounterMessage = MergeEncounter(request,patientBEncounters,patientA,patientB,prgs);
 		//List<Object> programMessage = MergeProgram(request,patientBPrograms,patientA,patientB);

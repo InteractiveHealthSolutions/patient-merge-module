@@ -331,36 +331,6 @@ function getPrograms(selected)
 	return program;
 }
 
-function getProgramsByName(data)
-{
-	var program=[];
-	var encounter_type=["TB03","TB03u","Form89","Specimen Collection","Regimen","Adverse Event","Yellow Card","Transfer In","Transfer Out","TB03Xdr","Lab Result"]
-	for(var i=0;i<data.length-1;i++)
-	{
-	for(var j=0;j<encounter_type.length;j++)
-	   {   
-    	if(data[i][3].search(encounter_type[j])!=-1)
-    	{
-    		if(encounter_type[j]=="Specimen Collection" || encounter_type[j]=="Transfer In" || encounter_type[j]=="Transfer Out")
-    	 	{
-    			program.push("MDR-TB PROGRAM")
-    			program.push("DOTS Program")
-    	 	}
-    		else if(encounter_type[j]=="TBO3" || encounter_type[j]=="Form89")
-    		{
-    			program.push("DOTS Program")
-    		}
-			else if(encounter_type[j]!="Lab Result")
-    		{
-				program.push("MDR-TB PROGRAM")		
-    		}
-    		
-    	}
-	   }
-	}
-	return program;
-}
-
 function getAllPrograms()
 {
 	var program=[];
