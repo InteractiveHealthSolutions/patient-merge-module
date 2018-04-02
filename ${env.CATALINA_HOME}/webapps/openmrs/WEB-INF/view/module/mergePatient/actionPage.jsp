@@ -217,9 +217,9 @@ function inputInjection()
 	
 		var data="${patientAEncounter}"
 		data = data.replace("[","").replace("]","").replace("}","").split(",");
-		for(var i=0;i<data.length;i+=4)
+		for(var i=0;i<data.length;i+=3)
 		{
-			if(data[i+1].indexOf("program=")!=-1)
+			if(data[i+1].indexOf(" program=")!=-1)
 			{
 				if(data[i+1].replace(" program=","")==jQuery("#program1").val() && jQuery("#pr_"+jQuery("#program1").val()).val()==data[i+2].replace(" name=",""))
 				{
@@ -236,6 +236,7 @@ function inputInjection()
 					alert("Add new Program, Program Id: "+jQuery("#program3").val()+" already have a Encounter");
 					return false;
 				}
+				i++;
 			}
 		
 		}
