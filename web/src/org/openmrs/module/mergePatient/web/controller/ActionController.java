@@ -111,6 +111,13 @@ public class ActionController extends SimpleFormController {
 			dataMap.put("id", patientAEncounter.getEncounterId());
 			dataMap.put("name", patientAEncounter.getEncounterType().getName());
 			dataMap.put("date", patientAEncounter.getDateCreated());
+			Set<Obs> allObs = patientAEncounter.getAllObs();
+			for (Obs obs : allObs) {
+	            if(obs.getConcept().getConceptId()==576)
+	            {
+	            	dataMap.put("program", obs.getValueNumeric().intValue());
+	    		}
+            }
 			dataList.add(dataMap);
 		}
 		model.put("patientAEncounter", dataList);
@@ -321,8 +328,29 @@ public class ActionController extends SimpleFormController {
 	
 	private Encounter mergeObs(Set<Obs> oldObs,Encounter newEncounter, Patient patientA, ArrayList<String> prgs,HttpServletRequest request)
 	{
+		String data=request.getParameter("programByName");
+	    String data1=request.getParameter("programByName1");
+	    String data2=request.getParameter("programByName2");
+	    String data3=request.getParameter("programByName3");
+		PatientProgram program=null;
+		if(data!=null && data!="")
+			program=Context.getProgramWorkflowService().getPatientProgram(Integer.parseInt(data));
+		else if(data1!=null && data1!="" && (newEncounter.getEncounterType().getName().equals("Specimen Collection") 
+		|| newEncounter.getEncounterType().getName().equals("Transfer In") || newEncounter.getEncounterType().getName().equals("Transfer Out")))
+		{	
+			program=Context.getProgramWorkflowService().getPatientProgram(Integer.parseInt(data1));
+		}
+		else if(data2!=null && data2!="" &&  (newEncounter.getEncounterType().getName().equals("TB03") ||
+		newEncounter.getEncounterType().getName().equals("Form 89")))
+		{
+			program=Context.getProgramWorkflowService().getPatientProgram(Integer.parseInt(data2));
+		}
+		else if(data3!=null && data3!="" && !newEncounter.getEncounterType().getName().equals("Lab Result"))
+		{
+			program=Context.getProgramWorkflowService().getPatientProgram(Integer.parseInt(data3));
+		}
 		for (Obs obs : oldObs) {
-            Set<Obs> obsList = traverse(obs,patientA, prgs,request);
+            Set<Obs> obsList = traverse(obs,patientA, prgs,request,program);
             for (Obs o : obsList) {
 	            newEncounter.addObs(o);
 	        }
@@ -334,27 +362,6 @@ public class ActionController extends SimpleFormController {
         }
 		if(found==false)
 		{
-			String data=request.getParameter("programByName");
-		    String data1=request.getParameter("programByName1");
-		    String data2=request.getParameter("programByName2");
-		    String data3=request.getParameter("programByName3");
-			PatientProgram program=null;
-			if(data!=null && data!="")
-				program=Context.getProgramWorkflowService().getPatientProgram(Integer.parseInt(data));
-			else if(data1!=null && data1!="" && (newEncounter.getEncounterType().getName().equals("Specimen Collection") 
-			|| newEncounter.getEncounterType().getName().equals("Transfer In") || newEncounter.getEncounterType().getName().equals("Transfer Out")))
-			{	
-				program=Context.getProgramWorkflowService().getPatientProgram(Integer.parseInt(data1));
-			}
-			else if(data2!=null && data2!="" &&  (newEncounter.getEncounterType().getName().equals("TB03") ||
-			newEncounter.getEncounterType().getName().equals("Form89")))
-			{
-				program=Context.getProgramWorkflowService().getPatientProgram(Integer.parseInt(data2));
-			}
-			else if(data3!=null && data3!="" && !newEncounter.getEncounterType().getName().equals("Lab Result"))
-			{
-				program=Context.getProgramWorkflowService().getPatientProgram(Integer.parseInt(data3));
-			}
 			if(program!=null)
 			{
 				Obs o =new Obs();
@@ -369,51 +376,21 @@ public class ActionController extends SimpleFormController {
         return newEncounter;
 	}
 	
-	private Set<Obs> traverse(Obs obs, Patient patientA, ArrayList<String> prgs, HttpServletRequest request)
+	private Set<Obs> traverse(Obs obs, Patient patientA, ArrayList<String> prgs, HttpServletRequest request, PatientProgram patientProgramA)
 	{ 
 	  Obs temp=new Obs();
 	  Set<Obs> obsList=new HashSet<Obs>();
 	  temp=temp.newInstance(obs);
-	  if(temp.getConcept().getConceptId()==576)
+	  if(temp.getConcept().getConceptId()==576 && patientProgramA!=null)
       { 
-		  Integer pr_id = temp.getValueNumeric().intValue();
-		  PatientProgram patientProgramB = Context.getProgramWorkflowService().getPatientProgram(pr_id);
-		  
-		  if(prgs.size()>0)
-		  {
-			  for(int i=0;i<prgs.size();i++)
-			  {
-				  int pp=Integer.parseInt(prgs.get(i));
-					  PatientProgram patientProgramA = Context.getProgramWorkflowService().getPatientProgram(pp); 
-					  Program programA = patientProgramA.getProgram();
-					  Program programB = patientProgramB.getProgram();
-					  if(programB.getProgramId()==programA.getProgramId())
-					  {
-						  temp.setValueNumeric(patientProgramA.getPatientProgramId().doubleValue());
-						  break;
-					  }
-			  }
-		  }
-		  else
-		  {
-			  Collection<PatientProgram> patientProgramA = Context.getProgramWorkflowService().getPatientPrograms(patientA);
-			  Program programB = patientProgramB.getProgram();
-			  for (PatientProgram patientProgram : patientProgramA) {
-				  Program programA = patientProgram.getProgram();
-				  if(programB.getProgramId()==programA.getProgramId())
-				  {
-					  temp.setValueNumeric(patientProgram.getPatientProgramId().doubleValue());
-					  break;
-				  }
-			  }
-		  }
+		  temp.setValueNumeric(patientProgramA.getPatientProgramId().doubleValue());
       }
       obsList.add(temp);
 	  
       if(obs.isObsGrouping() && obs.hasGroupMembers())
       {
         for(Obs o : obs.getGroupMembers()) {
-       	 	traverse(o, patientA, prgs,request);
+       	 	traverse(o, patientA, prgs,request,patientProgramA);
        	}
       }
 		return obsList;

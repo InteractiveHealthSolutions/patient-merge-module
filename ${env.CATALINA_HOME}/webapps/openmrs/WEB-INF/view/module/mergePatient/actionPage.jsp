@@ -15,10 +15,9 @@
 
 
 $(document).ready(function(){ 
-		 var url=window.location.href;
+		var url=window.location.href;
 		var patientAProgram=[];
 		var count1=0,count2=0,count3=0;
-		var encounter_type=["TB03","TB03u","Form89","Specimen Collection","Regimen","Adverse Event","Yellow Card","Transfer In","Transfer Out","TB03Xdr","Lab Result"]
 		var submitBool=false;
 		 if(url.includes("openmrstjk"))
 		 	url="/openmrstjk";
@@ -26,7 +25,6 @@ $(document).ready(function(){
 			 url="/openmrs";
 		 var programA=${patientAProgramjson};
 		 var allProgram=getAllPrograms();
-		 $("#dialog").hide();
 		 $("#dialog1").hide();
 		 $("#dialog2").hide();
 		 $("#dialog3").hide();
@@ -94,81 +92,11 @@ $(document).ready(function(){
 					   else if(programA.length>1 && program.length>0)
 					   {	
 						   for(var i=0;i<index.length;i++)
-						   {
-							for(var j=0;j<programA.length-1;j++)
-							{
-							if(program[index[i]]!=null)
-							{ 
-								if(program[index[i]][0].name==programA[j].name)
 								{
-									if(program[index[i]][0].found==undefined)
-										program[index[i]][0].found=[];
-									program[index[i]][0].found.push(programA[j].id);
-								}
-							}
-						   }
-						   }
-					   		var bool=false,q=0;
-						   for(q=0;q<allProgram.length;q++)
-						   { 
-							    bool=false; 
-						   for(var i=0;i<index.length;i++)
-						   { 
-							   if(program[index[i]]!=null)
-								{
-								   if(program[index[i]][0].found!=undefined)
-								   {
-									if(program[index[i]][0].found.length>1)
-									{ 
-										for(var j=0;j<programA.length-1;j++)
-										{
-									
-										 if(program[index[i]][0].name==programA[j].name && programA[j].name==allProgram[q].name)
-										 {	
-											 bool=true;
-											 break;
-										 }
-						   				 }  
-						   			}
-								   }
-								   else
-								   {
-									   alert('<spring:message code="@MODULE_ID@.mergePatient.addProgramException" />')
-									   submitBool=false;
-								   }
-						   		}
-							   if(bool==true)
-								   break;
-						   }
-						   if(bool==true)
-						   {
-							$( "#dialog" ).dialog();
-							$( "#programDiv select").remove();
-							$( "#programDiv snap").remove();
-							$( "#programDiv" ).append("<snap>"+allProgram[q].name+"</snap><select id='"+allProgram[q].id+"'></select>");
-							for(var i=0;i<programA.length-1;i++)
-							{
-								if(allProgram[q].name==programA[i].name)
-								{	
-									$( "#"+allProgram[q].id ).append("<option value='"+programA[i].id+"' id='"+programA[i].id+"'>"+programA[i].name+"-"+formatDate(programA[i].date)+"</option>");
-								}
-							}
-							submitBool=false;
-						  }
-						  else
-						  {
-								submitBool=true;	
-						  }
-						}
-						  if(q==allProgram.length && bool==false) 
-						  {
-							 for(var i=0;i<index.length;i++)
-								{
-								   if(program[index[i]]==null)
-								   {
-									for(var j=0;j<programA.length-1;j++)
+								   for(var j=0;j<programA.length-1;j++)
 									{
-									if(selectedVal[index[i]]!=undefined && (selectedVal[index[i]].toString()=="Specimen Collection" || selectedVal[index[i]].toString()=="Transfer In" || selectedVal[index[i]].toString()=="Transfer Out"))
+									if(selectedVal[index[i]]!=undefined && (selectedVal[index[i]].toString()=="Specimen Collection" ||
+										selectedVal[index[i]].toString()=="Transfer In" || selectedVal[index[i]].toString()=="Transfer Out"))
 						    	 	 {
 						    			$( "#programDiv1 select").remove();
 										$( "#programDiv1 snap").remove();
@@ -179,7 +107,10 @@ $(document).ready(function(){
 											if(programA[k].name=="MDR-TB PROGRAM" || programA[k].name=="DOTS Program")
 											{
 												count1++;
-												$( "#program1").append("<option value='"+programA[k].id+"' id='"+programA[k].id+"'>"+programA[k].name+"-"+formatDate(programA[k].date)+"</option>");
+												$( "#program1").append("<option value='"+programA[k].id+"' id='"+programA[k].id+"'>"
+														+programA[k].name+"-"+formatDate(programA[k].date)+"</option>");
+												$( "#program1").append("<input type='hidden' value='"+selectedVal[index[i]]+"' id='pr_"+programA[k].id+"'>");
+												
 											}
 										}
 										if(count1>1)
@@ -193,7 +124,8 @@ $(document).ready(function(){
 											submitBool=false;
 										}
 						    	 	}
-						    		else if(selectedVal[index[i]]!=undefined &&  (selectedVal[index[i]].toString()=="TB03" || selectedVal[index[i]].toString()=="Form89"))
+						    		else if(selectedVal[index[i]]!=undefined &&  (selectedVal[index[i]].toString()=="TB03" ||
+						    			selectedVal[index[i]].toString()=="Form 89"))
 						    		{
 						    			$( "#programDiv2 select").remove();
 										$( "#programDiv2 snap").remove();
@@ -204,7 +136,9 @@ $(document).ready(function(){
 											if(programA[k].name=="DOTS Program")
 											{
 												count2++;	
-												$( "#program2").append("<option value='"+programA[k].id+"' id='"+programA[k].id+"'>"+programA[k].name+"-"+formatDate(programA[k].date)+"</option>");
+												$( "#program2").append("<option value='"+programA[k].id+"' id='"+programA[k].id+"'>"
+													+programA[k].name+"-"+formatDate(programA[k].date)+"</option>");
+												$( "#program2").append("<input type='hidden' value='"+selectedVal[index[i]]+"' id='pr_"+programA[k].id+"'>");
 											}
 										}
 										if(count2>1)
@@ -214,7 +148,7 @@ $(document).ready(function(){
 										}
 										else if(count2==0)
 										{
-											alert("Add Program for this patient first.")
+											alert('<spring:message code="@MODULE_ID@.mergePatient.addProgramException" />')
 											submitBool=false;
 										}
 						    		}
@@ -229,7 +163,10 @@ $(document).ready(function(){
 											if(programA[k].name=="MDR-TB PROGRAM")
 											{	
 												count3++;
-												$( "#program3").append("<option value='"+programA[k].id+"' id='"+programA[k].id+"'>"+programA[k].name+"-"+formatDate(programA[k].date)+"</option>");
+												$( "#program3").append("<option value='"+programA[k].id+"' id='"+programA[k].id+"'>"
+													+programA[k].name+"-"+formatDate(programA[k].date)+"</option>");
+												$( "#program3").append("<input type='hidden' value='"+selectedVal[index[i]]+"' id='pr_"+programA[k].id+"'>");
+												
 											}
 										}
 										if(count3>1)
@@ -245,42 +182,31 @@ $(document).ready(function(){
 										
 						    		}
 								   }
-								   }  
 								}
-						  }
-						  if(submitBool==true && count1<=1 && count2<=1 && count3<=1)
+						  if(count1<=1 && count2<=1 && count3<=1)
 					      {
-							  	inputInjection()
+							  	if(inputInjection()==true)
 							 	document.getElementById("duplication").submit();
 						  }
 					   }
 					}
 				 });
 			   
-			   $("#programSelect").click(function(){
-				   for(var q=0;q<allProgram.length;q++)
-				   { 
-				   var input = $("<input>").attr("type", "hidden").attr("name", allProgram[q].id).val($("#"+allProgram[q].id).val());
-					$('#duplication').append($(input)); 
-				   }
-				   inputInjection();
-				   document.getElementById("duplication").submit();
-			   });
-			   
 			   $("#programSelect1").click(function(){
 				   
-				   inputInjection()
+				   if(inputInjection()==true)
 				   document.getElementById("duplication").submit();
 			   });
 			   
 			   $("#programSelect2").click(function(){
-				   inputInjection()
+				   
+				   if(inputInjection()==true)
 				   document.getElementById("duplication").submit();
 			   });
 			   
 			   $("#programSelect3").click(function(){
 				   
-				   inputInjection()
+				   if(inputInjection()==true)
 				   document.getElementById("duplication").submit();
 			   });
 			   
@@ -288,6 +214,31 @@ $(document).ready(function(){
 
 function inputInjection()
 {
+	
+		var data="${patientAEncounter}"
+		data = data.replace("[","").replace("]","").replace("}","").split(",");
+		for(var i=0;i<data.length;i+=4)
+		{
+			if(data[i+1].indexOf("program=")!=-1)
+			{
+				if(data[i+1].replace(" program=","")==jQuery("#program1").val() && jQuery("#pr_"+jQuery("#program1").val()).val()==data[i+2].replace(" name=",""))
+				{
+					alert("Add new Program, Program Id: "+jQuery("#program1").val()+" already have a Encounter");
+					return false;
+				}
+				else if(data[i+1].replace(" program=","")==jQuery("#program2").val() && jQuery("#pr_"+jQuery("#program2").val()).val()==data[i+2].replace(" name=",""))
+				{
+					alert("Add new Program, Program Id: "+jQuery("#program2").val()+" already have a Encounter");
+					return false;
+				}
+				else if(data[i+1].replace(" program=","")==jQuery("#program3").val() && jQuery("#pr_"+jQuery("#program3").val()).val()==data[i+2].replace(" name=",""))
+				{
+					alert("Add new Program, Program Id: "+jQuery("#program3").val()+" already have a Encounter");
+					return false;
+				}
+			}
+		
+		}
 	   var input = jQuery("<input>").attr("type", "hidden").attr("name", "programByName1").val(jQuery("#program1").val());
 		 jQuery('#duplication').append(jQuery(input));
 
@@ -296,6 +247,7 @@ function inputInjection()
 
 	   	 input = jQuery("<input>").attr("type", "hidden").attr("name", "programByName3").val(jQuery("#program3").val());
 	   	jQuery('#duplication').append(jQuery(input));
+	   	return true;
 }
 
 function formatDate(date) {
@@ -332,36 +284,6 @@ function getPrograms(selected)
 	return program;
 }
 
-function getProgramsByName(data)
-{
-	var program=[];
-	var encounter_type=["TB03","TB03u","Form89","Specimen Collection","Regimen","Adverse Event","Yellow Card","Transfer In","Transfer Out","TB03Xdr","Lab Result"]
-	for(var i=0;i<data.length-1;i++)
-	{
-	for(var j=0;j<encounter_type.length;j++)
-	   {   
-    	if(data[i][3].search(encounter_type[j])!=-1)
-    	{
-    		if(encounter_type[j]=="Specimen Collection" || encounter_type[j]=="Transfer In" || encounter_type[j]=="Transfer Out")
-    	 	{
-    			program.push("MDR-TB PROGRAM")
-    			program.push("DOTS Program")
-    	 	}
-    		else if(encounter_type[j]=="TBO3" || encounter_type[j]=="Form89")
-    		{
-    			program.push("DOTS Program")
-    		}
-			else if(encounter_type[j]!="Lab Result")
-    		{
-				program.push("MDR-TB PROGRAM")		
-    		}
-    		
-    	}
-	   }
-	}
-	return program;
-}
-
 function getAllPrograms()
 {
 	var program=[];
@@ -374,6 +296,17 @@ function getAllPrograms()
 	return program;
 }
 
+function getEncounterByPatient(id)
+{
+	var encounter=[];
+		   ObsProgramDWR.getEncounterByPatient(id,{
+			   callback:function(data) {
+				   encounter = data;
+				},
+			   async:false
+			 } );
+	return encounter;
+}
 function onEncounterClick(data)
 {
 	var url=window.location.href;
@@ -509,10 +442,6 @@ footer{
 			</Table>
 		</div>
 </form>
-<div id="dialog" title="Select Program">
-	<div id="programDiv"></div>
-  <button id="programSelect">Done</button>
-</div>
 
 <div id="dialog1" title="Select Program">
 	<div id="programDiv1"></div>

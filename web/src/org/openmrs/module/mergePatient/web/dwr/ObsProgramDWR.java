@@ -81,4 +81,15 @@ public class ObsProgramDWR {
         System.out.println("hello here: "+patientPrograms);
         return patientPrograms;
     }
+    
+ public Collection getEncounterByPatient(int patientId) {
+        
+        Integer userId = -1;
+        if (Context.isAuthenticated())
+            userId = Context.getAuthenticatedUser().getUserId();
+        Collection<Encounter> encounters = Context.getEncounterService().getEncountersByPatientId(patientId);
+        System.out.println("encounters: ");
+        System.out.println(encounters);
+        return encounters;
+    }
 }
