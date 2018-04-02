@@ -224,16 +224,28 @@ function inputInjection()
 				if(data[i+1].replace(" program=","")==jQuery("#program1").val() && jQuery("#pr_"+jQuery("#program1").val()).val()==data[i+2].replace(" name=",""))
 				{
 					alert("Add new Program, Program Id: "+jQuery("#program1").val()+" already have a Encounter");
+					$( "#programDiv1 select").remove();
+					$( "#programDiv1 snap").remove();
+					$( "#programDiv1 input").remove();
+					$( "#dialog1").dialog('close');
 					return false;
 				}
 				else if(data[i+1].replace(" program=","")==jQuery("#program2").val() && jQuery("#pr_"+jQuery("#program2").val()).val()==data[i+2].replace(" name=",""))
 				{
 					alert("Add new Program, Program Id: "+jQuery("#program2").val()+" already have a Encounter");
+					$( "#programDiv2 select").remove();
+					$( "#programDiv2 snap").remove();
+					$( "#programDiv2 input").remove();
+					$( "#dialog2").dialog('close');
 					return false;
 				}
 				else if(data[i+1].replace(" program=","")==jQuery("#program3").val() && jQuery("#pr_"+jQuery("#program3").val()).val()==data[i+2].replace(" name=",""))
 				{
 					alert("Add new Program, Program Id: "+jQuery("#program3").val()+" already have a Encounter");
+					$( "#programDiv3 select").remove();
+					$( "#programDiv3 snap").remove();
+					$( "#programDiv3 input").remove();
+					$( "#dialog3").dialog('close');
 					return false;
 				}
 				i++;
