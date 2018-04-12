@@ -189,6 +189,10 @@ $(document).ready(function(){
 							 	document.getElementById("duplication").submit();
 						  }
 					   }
+					   else if(program.length==0)
+					   {
+						   document.getElementById("duplication").submit();
+					   }
 					}
 				 });
 			   

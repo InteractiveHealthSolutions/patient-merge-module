@@ -1,4 +1,5 @@
 eclipse.preferences.version=1
+encoding//metadata/messages_ru.properties=UTF-8
 encoding//web/module/patientListPage.jsp=UTF-8
 encoding//web/src/org/openmrs/module/mergePatient/web/controller/PatientListController.java=UTF-8
 encoding//web/src/org/openmrs/module/mergePatient/web/controller/SearchPatientController.java=UTF-8

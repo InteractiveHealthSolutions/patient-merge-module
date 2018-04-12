@@ -14,7 +14,7 @@
 <Table>
 <tr>
 <td><spring:message code="@MODULE_ID@.mergePatient.patientName" />: </td>
-<td><input name="patientName" id="patientName" type="text" placeholder="Name of Patient" Required></td>
+<td><input name="patientName" id="patientName" type="text" placeholder='<spring:message code="@MODULE_ID@.mergePatient.patientName" />' Required></td>
 </tr>
 <tr>
 <td><spring:message code="@MODULE_ID@.mergePatient.patientDOB" />: </td>

@@ -318,6 +318,7 @@ public class ActionController extends SimpleFormController {
 				newEncounter.setEncounterType(encounter.getEncounterType());
 				newEncounter.setLocation(encounter.getLocation());
 				newEncounter.setEncounterDatetime(encounter.getEncounterDatetime());
+				newEncounter.setForm(encounter.getForm());
 				merged.add(mergeObs(encounter.getAllObs(),newEncounter,patientA, prgs,request));
 				Context.getEncounterService().saveEncounter(newEncounter);
 				Context.getEncounterService().voidEncounter(encounter, "Duplication of patient Id  #" + patientA.getPatientId());
@@ -381,6 +382,7 @@ public class ActionController extends SimpleFormController {
 	  Obs temp=new Obs();
 	  Set<Obs> obsList=new HashSet<Obs>();
 	  temp=temp.newInstance(obs);
+	  temp.setPerson(Context.getPersonService().getPerson(patientA.getPersonId()));
 	  if(temp.getConcept().getConceptId()==576 && patientProgramA!=null)
       { 
 		  temp.setValueNumeric(patientProgramA.getPatientProgramId().doubleValue());
