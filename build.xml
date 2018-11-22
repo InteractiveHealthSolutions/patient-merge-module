@@ -52,14 +52,14 @@
 		</copy>
 		
 		<!--  Compile module java files -->
-		<javac destdir="build" classpathref="classpath" debug="true" debuglevel="lines,source,vars">
-			<src path="src/" />
+		<javac destdir="build" classpathref="classpath" debug="true" debuglevel="lines,source,vars"
+					target="1.6" compiler="javac1.6" source="1.6" executable="C:\Program Files\Java\jdk1.6.0_32\bin\javac">			<src path="src/" />
 			<include name="**/*.java" />
 		</javac>
 		
 		<!--  Compile module web java files -->
-		<javac destdir="build" classpathref="classpath" debug="true" debuglevel="lines,source,vars">
-			<compilerarg line="-g" />
+		<javac destdir="build" classpathref="classpath" debug="true" debuglevel="lines,source,vars"
+					target="1.6" compiler="javac1.6" source="1.6" executable="C:\Program Files\Java\jdk1.6.0_32\bin\javac">			<compilerarg line="-g" />
 			<src path="web/src/" />
 			<include name="**/*.java" />
 		</javac>
